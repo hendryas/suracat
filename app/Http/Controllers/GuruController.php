@@ -11,7 +11,8 @@ class GuruController extends Controller
 {
     public function index()
     {
-        return view('data_guru.index');
+        $dataGuru = User::where('role', 'guru')->get();
+        return view('data_guru.index', compact('dataGuru'));
     }
 
     public function store(Request $request)
@@ -41,6 +42,44 @@ class GuruController extends Controller
         return response()->json([
             'status'  => 'success',
             'message' => 'Data guru berhasil disimpan!'
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->name  = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data guru berhasil diperbarui.'
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Pastikan hanya hapus guru
+        if ($user->role !== 'guru') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User ini bukan guru.'
+            ]);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data guru berhasil dihapus.'
         ]);
     }
 }

@@ -5,7 +5,7 @@
         
 
         <meta charset="utf-8" />
-                <title>Datatable | Approx - Admin & Dashboard Template</title>
+                <title>SURACAT</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                 <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
                 <meta content="" name="author" />
@@ -21,7 +21,7 @@
         <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
-
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     </head>
 
     
@@ -387,54 +387,43 @@
                                     <div class="table-responsive">
                                         <table class="table datatable" id="datatable_1">
                                             <thead class="table-light">
-                                              <tr>
-                                                <th>Name</th>
-                                                <th>Ext.</th>
-                                                <th>City</th>
-                                                <th data-type="date" data-format="YYYY/DD/MM">Start Date</th>
-                                                <th>Completion</th>
-                                              </tr>
+                                                <tr>
+                                                    <th>Nama</th>
+                                                    <th>Email</th>
+                                                    <th>Tanggal Dibuat</th>
+                                                    <th>Aksi</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach ($dataGuru as $guru)
                                                 <tr>
-                                                    <td>Unity Pugh</td>
-                                                    <td>9958</td>
-                                                    <td>Curicó</td>
-                                                    <td>2005/02/11</td>
-                                                    <td>37%</td>
+                                                    <td>{{ $guru->name }}</td>
+                                                    <td>{{ $guru->email }}</td>
+                                                    <td>{{ $guru->created_at->format('Y-m-d') }}</td>
+                                                    <td>
+                                                        <!-- Tombol Edit -->
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-warning btn-edit"
+                                                            data-id="{{ $guru->id }}"
+                                                            data-name="{{ $guru->name }}"
+                                                            data-email="{{ $guru->email }}"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalEditGuru">
+                                                            Edit
+                                                        </button>
+
+                                                        <!-- Tombol Delete -->
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-danger btn-delete"
+                                                            data-id="{{ $guru->id }}"
+                                                            data-name="{{ $guru->name }}">
+                                                            Hapus
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                                <tr>
-                                                    <td>Theodore Duran</td><td>8971</td><td>Dhanbad</td><td>1999/04/07</td><td>97%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Kylie Bishop</td><td>3147</td><td>Norman</td><td>2005/09/08</td><td>63%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Willow Gilliam</td><td>3497</td><td>Amqui</td><td>2009/29/11</td><td>30%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Blossom Dickerson</td><td>5018</td><td>Kempten</td><td>2006/11/09</td><td>17%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Elliott Snyder</td><td>3925</td><td>Enines</td><td>2006/03/08</td><td>57%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Castor Pugh</td><td>9488</td><td>Neath</td><td>2014/23/12</td><td>93%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Pearl Carlson</td><td>6231</td><td>Cobourg</td><td>2014/31/08</td><td>100%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Deirdre Bridges</td><td>1579</td><td>Eberswalde-Finow</td><td>2014/26/08</td><td>44%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Daniel Baldwin</td><td>6095</td><td>Moircy</td><td>2000/11/01</td><td>33%</td>
-                                                </tr>  
-                                                <tr>
-                                                    <td>Pearl Carlson</td><td>6231</td><td>Cobourg</td><td>2014/31/08</td><td>100%</td>
-                                                </tr>                                                                                        
+                                                @endforeach
                                             </tbody>
-                                          </table>
+                                        </table>
                                     </div>   
                                 </div><!--end card-body--> 
                             </div><!--end card--> 
@@ -545,9 +534,84 @@
 
         <!-- end page-wrapper -->
 
+        <!-- Modal Edit Guru -->
+        <div class="modal fade" id="modalEditGuru" tabindex="-1" aria-labelledby="modalEditGuruLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEditGuru" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalEditGuruLabel">Edit Data Guru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit-id">
+                    <div class="mb-3">
+                        <label for="edit-nama" class="form-label">Nama</label>
+                        <input type="text" class="form-control" name="name" id="edit-nama" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="edit-email" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Update</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+
+        <script>
+$(document).ready(function () {
+    $('.btn-delete').on('click', function () {
+        const guruId = $(this).data('id');
+        const guruName = $(this).data('name');
+
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            text: `Data guru "${guruName}" akan dihapus!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/admin/guru/${guruId}`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        _method: 'DELETE'
+                    },
+                    success: function (res) {
+                        if (res.status === 'success') {
+                            Swal.fire('Berhasil!', res.message, 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Gagal', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Gagal menghapus data.', 'error');
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+
+
         <!-- Javascript  -->  
         <!-- vendor js -->
-
+        
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
         $(document).ready(function () {
@@ -595,7 +659,52 @@
         });
         </script>
 
-        
+        <script>
+        $(document).ready(function () {
+            // Saat tombol edit diklik
+            $('.btn-edit').on('click', function () {
+                let id = $(this).data('id');
+                let name = $(this).data('name');
+                let email = $(this).data('email');
+
+                $('#edit-id').val(id);
+                $('#edit-nama').val(name);
+                $('#edit-email').val(email);
+
+                // Set action URL untuk form update
+                $('#formEditGuru').attr('action', `/admin/guru/${id}`);
+            });
+
+            // Handle form update dengan AJAX dan SweetAlert
+            $('#formEditGuru').on('submit', function (e) {
+                e.preventDefault();
+
+                let form = $(this);
+                let actionUrl = form.attr('action');
+                let formData = form.serialize();
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: formData,
+                    success: function (res) {
+                        if (res.status === 'success') {
+                            $('#modalEditGuru').modal('hide');
+                            Swal.fire('Sukses', res.message, 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Gagal', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Terjadi kesalahan saat mengupdate data.', 'error');
+                    }
+                });
+            });
+        });
+        </script>
+
         <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
 
