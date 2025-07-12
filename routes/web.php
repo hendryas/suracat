@@ -3,6 +3,7 @@
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\SoalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +36,22 @@ Route::prefix('admin')->group(function () {
     Route::get('/siswa/{id}/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
     Route::put('/siswa/{id}', [SiswaController::class, 'update'])->name('siswa.update');
     Route::delete('/siswa/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
+
+    // Route Manajemen Soal Ujian
+    Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
+    Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
+    Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
+    Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('soal.edit');
+    Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
+    Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
+
+    // Route Manajemen Soal Ujian
+    Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
+    Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
+    Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
+    Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('soal.edit');
+    Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
+    Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
 });
 
 require __DIR__ . '/auth.php';
