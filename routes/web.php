@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\SoalController;
 use App\Http\Controllers\UjianController;
+use App\Http\Controllers\UjianSiswaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,14 +48,6 @@ Route::prefix('admin')->group(function () {
     Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
     Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
 
-    // Route Manajemen Soal Ujian
-    Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
-    Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
-    Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
-    Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('soal.edit');
-    Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
-    Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
-
     // Route Manajemen Ujian
     Route::get('/ujian', [UjianController::class, 'index'])->name('ujian.index');
     Route::get('/ujian/create', [UjianController::class, 'create'])->name('ujian.create');
@@ -68,6 +61,13 @@ Route::prefix('admin')->group(function () {
     Route::get('/peserta-ujian/create', [PesertaUjianController::class, 'create'])->name('peserta.create');
     Route::post('/peserta-ujian', [PesertaUjianController::class, 'store'])->name('peserta.store');
     Route::delete('/peserta-ujian/{id}', [PesertaUjianController::class, 'destroy'])->name('peserta.destroy');
+});
+
+Route::prefix('siswa')->group(function () {
+    // ujian siswa
+    Route::get('/ujian-saya', [UjianSiswaController::class, 'daftarUjian'])->name('ujian.daftar');
+    Route::get('/ujian/{id}/mulai', [UjianSiswaController::class, 'mulaiUjian'])->name('ujian.mulai');
+    Route::post('/ujian/{id}/submit', [UjianSiswaController::class, 'submitUjian'])->name('ujian.submit');
 });
 
 require __DIR__ . '/auth.php';

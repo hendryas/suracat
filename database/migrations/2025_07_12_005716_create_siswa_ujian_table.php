@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('ujian_id');
             $table->timestamp('waktu_mulai')->nullable();
             $table->timestamp('waktu_selesai')->nullable();
+            $table->decimal('nilai', 5, 2)->nullable();
             $table->enum('status', ['belum', 'sedang', 'selesai'])->default('belum');
             $table->json('shuffled_soal')->nullable();
             $table->timestamps();

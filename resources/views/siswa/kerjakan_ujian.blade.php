@@ -368,57 +368,31 @@
                             </div><!--end page-title-box-->
                         </div><!--end col-->
                     </div><!--end row-->
-                    <div class="row justify-content-center">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="row align-items-center">
-                                        <div class="col">                      
-                                            <h4 class="card-title">Data Siswa</h4>                      
-                                        </div><!--end col-->
-                                        <div class="col-auto">
-                                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahPeserta">
-                                                  + Tambah Peserta
-                                              </button>
-                                        </div>
-                                    </div>  <!--end row-->                                  
-                                </div><!--end card-header-->
-                                <div class="pt-0 card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-hover" id="tablePeserta">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Nama Siswa</th>
-                                                    <th>Ujian</th>
-                                                    <th>Waktu Daftar</th>
-                                                    <th>Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                    @foreach($peserta as $i => $row)
-                                                    <tr>
-                                                        <td>{{ $i + 1 }}</td>
-                                                        <td>{{ $row->siswa_nama ?? '-' }}</td>
-                                                        <td>{{ $row->nama_ujian ?? '-' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($row->created_at)->format('d/m/Y H:i') }}</td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-warning btnEdit" data-id="{{ $row->peserta_id }}">
-                                                                Edit
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger btnDelete" data-id="{{ $row->peserta_id }}">
-                                                                Hapus
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>   
-                                </div><!--end card-body--> 
-                            </div><!--end card--> 
-                        </div> <!--end col-->                                                        
-                    </div><!--end row-->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center alert alert-info">
+                                Waktu Tersisa: <span id="timer">00:00</span>
+                            </div>
+                            <form id="formUjian" method="POST" action="{{ route('ujian.submit', $ujian->id) }}">
+                                <input type="hidden" id="durasiUjian" value="{{ $ujian->durasi_menit }}">
+                                <input type="hidden" id="sisaDetik" value="{{ $sisa_detik }}">
+                                @csrf
+                                @foreach($soal as $index => $item)
+                                <div class="p-3 mb-4 border rounded">
+                                    <p><strong>Soal {{ $index + 1 }}:</strong> {{ $item->pertanyaan }}</p>
+                                    @foreach(['a','b','c','d','e'] as $opt)
+                                    <div>
+                                        <input type="radio" name="jawaban[{{ $item->id }}]" value="{{ $opt }}" required>
+                                        {{ strtoupper($opt) }}. {{ $item->{'opsi_'.$opt} }}
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endforeach
+
+                                <button type="button" id="btnSubmit" class="btn btn-success">Kumpulkan Jawaban</button>
+                            </form>
+                        </div>
+                    </div>
 
                                                            
                 </div><!-- container -->
@@ -489,159 +463,62 @@
             <!-- end page content -->
         </div>
 
-        <!-- Modal Tambah Peserta -->
-        <div class="modal fade" id="modalTambahPeserta" tabindex="-1" aria-labelledby="modalTambahPesertaLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <form id="formTambahPeserta" method="POST" action="{{ route('peserta.store') }}">
-              @csrf
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Tambah Peserta Ujian</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="siswa_id" class="form-label">Pilih Siswa</label>
-                        <select name="siswa_id" class="form-select" required>
-                            <option value="">-- Pilih Siswa --</option>
-                            @foreach($siswa as $s)
-                                <option value="{{ $s->id }}">{{ $s->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="ujian_id" class="form-label">Pilih Ujian</label>
-                        <select name="ujian_id" class="form-select" required>
-                            <option value="">-- Pilih Ujian --</option>
-                            @foreach($ujian as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama_ujian }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">Simpan</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
         <!-- end page-wrapper -->
-
-        <!-- Modal Edit Siswa -->
-        <div class="modal fade" id="modalEditSiswa" tabindex="-1" aria-labelledby="modalEditSiswaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="formEditSiswa" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="modalEditSiswaLabel">Edit Data Siswa</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="edit-id">
-                    <div class="mb-3">
-                        <label for="edit-nama" class="form-label">Nama</label>
-                        <input type="text" class="form-control" name="name" id="edit-nama" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="edit-email" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Update</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                </div>
-            </div>
-            </form>
-        </div>
-        </div>
-
-        <script>
-$(document).ready(function () {
-    $('.btn-delete').on('click', function () {
-        const siswaId = $(this).data('id');
-        const siswaName = $(this).data('name');
-
-        Swal.fire({
-            title: 'Yakin ingin menghapus?',
-            text: `Data siswa "${siswaName}" akan dihapus!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: `/admin/siswa/${siswaId}`,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'DELETE'
-                    },
-                    success: function (res) {
-                        if (res.status === 'success') {
-                            Swal.fire('Berhasil!', res.message, 'success').then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire('Gagal', res.message, 'error');
-                        }
-                    },
-                    error: function () {
-                        Swal.fire('Error', 'Gagal menghapus data.', 'error');
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
-
 
         <!-- Javascript  -->  
         <!-- vendor js -->
         
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-            $(document).ready(function() {
-                $('#tablePeserta').DataTable();
-
-                $('.btnDelete').on('click', function () {
-                    let id = $(this).data('id');
-                    Swal.fire({
-                        title: 'Hapus peserta ini?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: `/admin/peserta/${id}`,
-                                type: 'DELETE',
-                                data: {
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(res) {
-                                    Swal.fire('Berhasil!', res.message, 'success').then(() => location.reload());
-                                },
-                                error: function() {
-                                    Swal.fire('Gagal', 'Terjadi kesalahan saat menghapus.', 'error');
-                                }
-                            });
-                        }
-                    });
-                });
+        document.getElementById('btnSubmit').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Kumpulkan Ujian?',
+                text: 'Jawaban tidak bisa diubah setelah dikumpulkan.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Kumpulkan!',
+                cancelButtonText: 'Cek Dulu'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('formUjian').submit();
+                }
             });
+        });
         </script>
 
+        <script>
+                let totalSeconds = parseInt(document.getElementById('durasiUjian').value) * 60;
+                const timerDisplay = document.getElementById('timer');
+                const formUjian = document.getElementById('formUjian');
+
+                function updateTimer() {
+                    let minutes = Math.floor(totalSeconds / 60);
+                    let seconds = totalSeconds % 60;
+                    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+
+                updateTimer();
+
+                const timerInterval = setInterval(() => {
+                    totalSeconds--;
+
+                    if (totalSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Waktu Habis',
+                            text: 'Jawabanmu sedang disubmit...',
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                        });
+
+                        // Auto-submit form
+                        formUjian.submit();
+                    }
+
+                    updateTimer();
+                }, 1000);
+            </script>
 
         <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>

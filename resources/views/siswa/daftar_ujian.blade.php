@@ -376,42 +376,46 @@
                                         <div class="col">                      
                                             <h4 class="card-title">Data Siswa</h4>                      
                                         </div><!--end col-->
-                                        <div class="col-auto">
-                                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahPeserta">
-                                                  + Tambah Peserta
-                                              </button>
-                                        </div>
                                     </div>  <!--end row-->                                  
                                 </div><!--end card-header-->
                                 <div class="pt-0 card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered table-hover" id="tablePeserta">
+                                        <table class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Nama Siswa</th>
-                                                    <th>Ujian</th>
-                                                    <th>Waktu Daftar</th>
+                                                    <th>Nama Ujian</th>
+                                                    <th>Jadwal</th>
+                                                    <th>Status</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                    @foreach($peserta as $i => $row)
+                                                @foreach($daftarUjian as $i => $ujian)
                                                     <tr>
                                                         <td>{{ $i + 1 }}</td>
-                                                        <td>{{ $row->siswa_nama ?? '-' }}</td>
-                                                        <td>{{ $row->nama_ujian ?? '-' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($row->created_at)->format('d/m/Y H:i') }}</td>
+                                                        <td>{{ $ujian->nama_ujian }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($ujian->jadwal)->format('d/m/Y H:i') }}</td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-warning btnEdit" data-id="{{ $row->peserta_id }}">
-                                                                Edit
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger btnDelete" data-id="{{ $row->peserta_id }}">
-                                                                Hapus
-                                                            </button>
+                                                            @if($ujian->status == 'belum')
+                                                                <span class="badge bg-secondary">Belum Mulai</span>
+                                                            @elseif($ujian->status == 'sedang')
+                                                                <span class="badge bg-warning">Sedang Dikerjakan</span>
+                                                            @elseif($ujian->status == 'selesai')
+                                                                <span class="badge bg-success">Selesai</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($ujian->status != 'selesai')
+                                                                <a href="{{ route('ujian.mulai', $ujian->ujian_id) }}" class="btn btn-sm btn-primary">
+                                                                    Mulai Ujian
+                                                                </a>
+                                                            @else
+                                                                <span class="text-muted">Sudah Selesai</span>
+                                                            @endif
                                                         </td>
                                                     </tr>
-                                                    @endforeach
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>   
@@ -489,45 +493,6 @@
             <!-- end page content -->
         </div>
 
-        <!-- Modal Tambah Peserta -->
-        <div class="modal fade" id="modalTambahPeserta" tabindex="-1" aria-labelledby="modalTambahPesertaLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <form id="formTambahPeserta" method="POST" action="{{ route('peserta.store') }}">
-              @csrf
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Tambah Peserta Ujian</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="siswa_id" class="form-label">Pilih Siswa</label>
-                        <select name="siswa_id" class="form-select" required>
-                            <option value="">-- Pilih Siswa --</option>
-                            @foreach($siswa as $s)
-                                <option value="{{ $s->id }}">{{ $s->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="ujian_id" class="form-label">Pilih Ujian</label>
-                        <select name="ujian_id" class="form-select" required>
-                            <option value="">-- Pilih Ujian --</option>
-                            @foreach($ujian as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama_ujian }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">Simpan</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
         <!-- end page-wrapper -->
 
         <!-- Modal Edit Siswa -->
@@ -561,87 +526,21 @@
         </div>
         </div>
 
-        <script>
-$(document).ready(function () {
-    $('.btn-delete').on('click', function () {
-        const siswaId = $(this).data('id');
-        const siswaName = $(this).data('name');
-
-        Swal.fire({
-            title: 'Yakin ingin menghapus?',
-            text: `Data siswa "${siswaName}" akan dihapus!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: `/admin/siswa/${siswaId}`,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'DELETE'
-                    },
-                    success: function (res) {
-                        if (res.status === 'success') {
-                            Swal.fire('Berhasil!', res.message, 'success').then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire('Gagal', res.message, 'error');
-                        }
-                    },
-                    error: function () {
-                        Swal.fire('Error', 'Gagal menghapus data.', 'error');
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
-
 
         <!-- Javascript  -->  
         <!-- vendor js -->
         
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       
+        @if(session('success'))
         <script>
-            $(document).ready(function() {
-                $('#tablePeserta').DataTable();
-
-                $('.btnDelete').on('click', function () {
-                    let id = $(this).data('id');
-                    Swal.fire({
-                        title: 'Hapus peserta ini?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: `/admin/peserta/${id}`,
-                                type: 'DELETE',
-                                data: {
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(res) {
-                                    Swal.fire('Berhasil!', res.message, 'success').then(() => location.reload());
-                                },
-                                error: function() {
-                                    Swal.fire('Gagal', 'Terjadi kesalahan saat menghapus.', 'error');
-                                }
-                            });
-                        }
-                    });
-                });
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}'
             });
         </script>
-
+        @endif
 
         <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>

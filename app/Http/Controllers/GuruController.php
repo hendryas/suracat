@@ -12,7 +12,15 @@ class GuruController extends Controller
     public function index()
     {
         $dataGuru = User::where('role', 'guru')->get();
-        return view('data_guru.index', compact('dataGuru'));
+
+        $title = 'Data Guru';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Data Guru' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('data_guru.index', compact('dataGuru', 'title', 'breadcrumbs'));
     }
 
     public function store(Request $request)

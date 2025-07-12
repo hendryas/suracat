@@ -11,6 +11,7 @@ class SiswaUjian extends Model
         'ujian_id',
         'waktu_mulai',
         'waktu_selesai',
+        'nilai',
         'status',
         'shuffled_soal'
     ];

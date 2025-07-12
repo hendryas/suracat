@@ -12,7 +12,7 @@ class PesertaUjianController extends Controller
 {
     public function index()
     {
-        // Ambil semua data peserta ujian beserta relasi siswa dan ujian
+        // Data peserta ujian (join dengan siswa dan ujian)
         $peserta = DB::table('siswa_ujians as su')
             ->leftJoin('users as u', 'su.siswa_id', '=', 'u.id')
             ->leftJoin('ujians as uj', 'su.ujian_id', '=', 'uj.id')
@@ -22,15 +22,20 @@ class PesertaUjianController extends Controller
                 'uj.nama_ujian',
                 'su.status',
                 'su.waktu_mulai',
-                'su.waktu_selesai'
+                'su.waktu_selesai',
+                'su.nilai',
+                'su.status',
+                'su.shuffled_soal',
+                'su.created_at',
+                'su.updated_at'
             )
             ->get();
 
-        // Ambil semua siswa yang memiliki role 'siswa'
-        $siswa = DB::table('users')->where('role', 'siswa')->get();
+        // Siswa yang bisa dipilih
+        $siswa = User::where('role', 'siswa')->get();
 
-        // Ambil semua ujian
-        $ujian = DB::table('ujians')->get();
+        // Semua ujian
+        $ujian = Ujian::all();
 
         return view('management.peserta.index', compact('peserta', 'siswa', 'ujian'));
     }
@@ -40,14 +45,14 @@ class PesertaUjianController extends Controller
         $siswas = User::where('role', 'siswa')->get();
         $ujians = Ujian::all();
 
-        return view('peserta.create', compact('siswas', 'ujians'));
+        return view('management.peserta.create', compact('siswas', 'ujians'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'siswa_id' => 'required|exists:users,id',
-            'ujian_id' => 'required|exists:ujian,id',
+            'ujian_id' => 'required|exists:ujians,id',
         ]);
 
         $exists = SiswaUjian::where('siswa_id', $request->siswa_id)
@@ -55,16 +60,17 @@ class PesertaUjianController extends Controller
             ->first();
 
         if ($exists) {
-            return redirect()->back()->with('error', 'Siswa sudah terdaftar di ujian ini.');
+            return redirect()->back()->with('error', '❗ Siswa sudah terdaftar di ujian ini.');
         }
 
+        // 🚀 Tambahkan peserta ujian
         SiswaUjian::create([
             'siswa_id' => $request->siswa_id,
             'ujian_id' => $request->ujian_id,
             'status'   => 'belum',
         ]);
 
-        return redirect()->route('peserta.index')->with('success', 'Peserta berhasil ditambahkan.');
+        return redirect()->route('peserta.index')->with('success', '✅ Peserta berhasil ditambahkan.');
     }
 
     public function destroy($id)
@@ -72,6 +78,9 @@ class PesertaUjianController extends Controller
         $peserta = SiswaUjian::findOrFail($id);
         $peserta->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'Peserta berhasil dihapus.']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Peserta berhasil dihapus.'
+        ]);
     }
 }
