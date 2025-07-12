@@ -63,3 +63,69 @@
          </form>
      </div>
  </div>
+
+ {{-- Modal Siswa Management --}}
+ <!-- Modal Edit Siswa -->
+ <div class="modal fade" id="modalEditSiswa" tabindex="-1" aria-labelledby="modalEditSiswaLabel" aria-hidden="true">
+     <div class="modal-dialog">
+         <form id="formEditSiswa" method="POST">
+             @csrf
+             @method('PUT')
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="modalEditSiswaLabel">Edit Data Siswa</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                 </div>
+                 <div class="modal-body">
+                     <input type="hidden" name="id" id="edit-id">
+                     <div class="mb-3">
+                         <label for="edit-nama" class="form-label">Nama</label>
+                         <input type="text" class="form-control" name="name" id="edit-nama" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="edit-email" class="form-label">Email</label>
+                         <input type="email" class="form-control" name="email" id="edit-email" required>
+                     </div>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="submit" class="btn btn-success">Update</button>
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                 </div>
+             </div>
+         </form>
+     </div>
+ </div>
+
+ <!-- Modal Tambah Siswa -->
+ <div class="modal fade" id="modalTambahSiswa" tabindex="-1" aria-labelledby="modalTambahSiswaLabel"
+     aria-hidden="true">
+     <div class="modal-dialog">
+         <form action="{{ route('siswa.store') }}" method="POST">
+             @csrf
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="modalTambahSiswaLabel">Tambah Data Siswa</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                 </div>
+                 <div class="modal-body">
+                     <div class="mb-3">
+                         <label for="nama" class="form-label">Nama Lengkap</label>
+                         <input type="text" class="form-control" name="nama" id="nama" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="email" class="form-label">Email Siswa</label>
+                         <input type="email" class="form-control" name="email" id="email" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="password" class="form-label">Password Login</label>
+                         <input type="password" class="form-control" name="password" id="password" required>
+                     </div>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="submit" class="btn btn-success">Simpan</button>
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                 </div>
+             </div>
+         </form>
+     </div>
+ </div>

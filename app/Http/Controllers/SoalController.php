@@ -11,12 +11,27 @@ class SoalController extends Controller
     public function index()
     {
         $dataSoal = Soal::latest()->get();
-        return view('management.soal.index', compact('dataSoal'));
+
+        $title = 'Soal';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Soal' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('management.soal.index', compact('dataSoal', 'title', 'breadcrumbs'));
     }
 
     public function create()
     {
-        return view('management.soal.create');
+        $title = 'Soal';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Soal' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('management.soal.create', compact('title', 'breadcrumbs'));
     }
 
     public function store(Request $request)

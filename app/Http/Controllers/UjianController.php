@@ -10,7 +10,15 @@ class UjianController extends Controller
     public function index()
     {
         $ujians = Ujian::all();
-        return view('management.ujian.index', compact('ujians'));
+
+        $title = 'Ujian';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Kelola Ujian' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('management.ujian.index', compact('ujians', 'title', 'breadcrumbs'));
     }
 
     public function create()

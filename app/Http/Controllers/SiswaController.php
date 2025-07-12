@@ -12,7 +12,15 @@ class SiswaController extends Controller
     public function index()
     {
         $dataSiswa = User::where('role', 'siswa')->get();
-        return view('management.siswa.index', compact('dataSiswa'));
+
+        $title = 'Data Siswa';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Data Siswa' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('management.siswa.index', compact('dataSiswa', 'title', 'breadcrumbs'));
     }
 
     public function create()

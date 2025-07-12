@@ -37,7 +37,14 @@ class PesertaUjianController extends Controller
         // Semua ujian
         $ujian = Ujian::all();
 
-        return view('management.peserta.index', compact('peserta', 'siswa', 'ujian'));
+        $title = 'Kelola Peserta Ujian';
+        $breadcrumbs = [
+            'Home' => route('dashboard'),  // sesuaikan dengan route kamu
+            'Management' => '#',
+            'Kelola Peserta Ujian' => '' // terakhir (tidak pakai URL)
+        ];
+
+        return view('management.peserta.index', compact('peserta', 'siswa', 'ujian', 'title', 'breadcrumbs'));
     }
 
     public function create()
