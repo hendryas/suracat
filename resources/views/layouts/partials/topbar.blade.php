@@ -29,8 +29,14 @@
                             </div><!--end media-body-->
                         </div>
                         <div class="mb-0 dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="auth-login.html"><i
-                                class="align-text-bottom las la-power-off fs-18 me-1"></i> Logout</a>
+                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                            @csrf
+                            <a href="{{ route('logout') }}" class="dropdown-item text-danger"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="align-text-bottom las la-power-off fs-18 me-1"></i> Logout
+                            </a>
+                        </form>
+
                     </div>
                 </li>
             </ul><!--end topbar-nav-->

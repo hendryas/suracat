@@ -24,9 +24,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $request->authenticate(); // Otentikasi user
 
-        $request->session()->regenerate();
+        $request->session()->regenerate(); // Hindari session fixation
+
+        // Ambil data user yang login
+        $user = auth()->user();
+
+        // Simpan data user ke dalam session
+        session([
+            'user_id'    => $user->id,
+            'user_name'  => $user->name,
+            'user_email' => $user->email,
+            'user_role'  => $user->role ?? 'guest', // default jika role null
+        ]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

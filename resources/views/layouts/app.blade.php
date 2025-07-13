@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" data-startbar="dark" data-bs-theme="light">
+
 <head>
     @include('layouts.partials.head')
 </head>
+
 <body>
     @include('layouts.partials.topbar')
     @include('layouts.partials.sidebar')
@@ -17,4 +19,5 @@
     @include('layouts.partials.modals')
     @include('layouts.partials.scripts')
 </body>
+
 </html>

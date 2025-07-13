@@ -12,9 +12,11 @@ class UjianSiswaController extends Controller
 {
     public function daftarUjian()
     {
+        $siswa_id = auth()->id();
+
         $daftarUjian = DB::table('siswa_ujians as su')
             ->leftJoin('ujians as uj', 'su.ujian_id', '=', 'uj.id')
-            ->where('su.siswa_id', 3)
+            ->where('su.siswa_id', $siswa_id)
             ->select(
                 'su.id as peserta_id',
                 'su.status',
@@ -27,8 +29,6 @@ class UjianSiswaController extends Controller
             )
             ->get();
 
-
-
         return view('siswa.daftar_ujian', compact('daftarUjian'));
     }
 
@@ -37,7 +37,7 @@ class UjianSiswaController extends Controller
         $siswa_id = auth()->id();
 
         // Cek apakah siswa sudah terdaftar di ujian
-        $peserta = SiswaUjian::where('siswa_id', 3)
+        $peserta = SiswaUjian::where('siswa_id', $siswa_id)
             ->where('ujian_id', $id)
             ->firstOrFail();
 
@@ -81,10 +81,10 @@ class UjianSiswaController extends Controller
     public function submitUjian(Request $request, $id)
     {
         $siswaId = auth()->id();
-        $jawaban = $request->input('jawaban', []);
+        $jawabanInput = $request->input('jawaban', []);
 
-        $peserta = DB::table('siswa_ujians')
-            ->where('siswa_id', 2)
+        // Cek peserta
+        $peserta = SiswaUjian::where('siswa_id', $siswaId)
             ->where('ujian_id', $id)
             ->first();
 
@@ -92,28 +92,42 @@ class UjianSiswaController extends Controller
             return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
         }
 
-        // Hitung nilai
         $jumlahBenar = 0;
-        $jumlahSoal = count($jawaban);
+        $jumlahSoal = count($jawabanInput);
 
-        foreach ($jawaban as $soalId => $jawab) {
-            $soal = DB::table('soal_bank')->find($soalId);
-            if ($soal && strtolower($soal->jawaban_benar) == strtolower($jawab)) {
-                $jumlahBenar++;
+        foreach ($jawabanInput as $soalId => $jawab) {
+            $soal = Soal::find($soalId);
+
+            $isCorrect = null;
+            if ($soal) {
+                $isCorrect = strtolower($soal->jawaban_benar) === strtolower($jawab);
+                if ($isCorrect) {
+                    $jumlahBenar++;
+                }
             }
+
+            // Simpan jawaban siswa
+            JawabanSiswa::create([
+                'siswa_id' => $siswaId,
+                'ujian_id' => $id,
+                'soal_id' => $soalId,
+                'jawaban' => strtoupper($jawab),
+                'is_correct' => $isCorrect,
+                'waktu_dijawab' => now(),
+            ]);
         }
 
+        // Hitung nilai
         $nilai = $jumlahSoal > 0 ? ($jumlahBenar / $jumlahSoal) * 100 : 0;
 
-        // Update peserta ujian
-        DB::table('siswa_ujians')
-            ->where('id', $peserta->id)
-            ->update([
-                'waktu_selesai' => Carbon::now(),
-                'status' => 'selesai',
-                'nilai' => $nilai,
-            ]);
+        // Update status peserta ujian
+        $peserta->update([
+            'waktu_selesai' => now(),
+            'status' => 'selesai',
+            'nilai' => $nilai,
+        ]);
 
-        return redirect()->route('ujian.daftar')->with('success', '✅ Ujian berhasil dikumpulkan. Nilai Anda: ' . round($nilai, 2));
+        return redirect()->route('ujian.daftar')
+            ->with('success', '✅ Ujian berhasil dikumpulkan. Nilai Anda: ' . round($nilai, 2));
     }
 }

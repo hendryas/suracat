@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::redirect('/', '/login');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth'])->group(function () {
     // Route Manajemen Guru
     Route::get('/guru', [GuruController::class, 'index'])->name('guru.index');
     Route::get('/guru/create', [GuruController::class, 'create'])->name('guru.create');
@@ -63,7 +63,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/peserta-ujian/{id}', [PesertaUjianController::class, 'destroy'])->name('peserta.destroy');
 });
 
-Route::prefix('siswa')->group(function () {
+Route::prefix('siswa')->middleware(['auth'])->group(function () {
     // ujian siswa
     Route::get('/ujian-saya', [UjianSiswaController::class, 'daftarUjian'])->name('ujian.daftar');
     Route::get('/ujian/{id}/mulai', [UjianSiswaController::class, 'mulaiUjian'])->name('ujian.mulai');
