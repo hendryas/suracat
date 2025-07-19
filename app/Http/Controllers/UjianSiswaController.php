@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JawabanSiswa;
 use App\Models\SiswaUjian;
 use App\Models\Soal;
 use Carbon\Carbon;
@@ -41,42 +42,38 @@ class UjianSiswaController extends Controller
             ->where('ujian_id', $id)
             ->firstOrFail();
 
-        // Jika status belum, mulai sesi
+        // Jika status belum, maka ambil soal acak dan simpan ke siswa_ujian
         if ($peserta->status === 'belum') {
-            // Ambil semua ID soal yang terkait ujian ini
-            $soal_ids = DB::table('ujian_soal')
-                ->where('ujian_id', $id)
-                ->pluck('soal_id')
+            $selected_soal_ids = Soal::inRandomOrder()
+                ->limit(10)
+                ->pluck('id')
                 ->toArray();
 
-            shuffle($soal_ids); // acak ID-nya
-
-            $peserta->shuffled_soal = json_encode($soal_ids);
+            $peserta->shuffled_soal = json_encode($selected_soal_ids);
             $peserta->waktu_mulai = now();
             $peserta->status = 'sedang';
             $peserta->save();
         } else {
-            $soal_ids = json_decode($peserta->shuffled_soal);
+            $selected_soal_ids = json_decode($peserta->shuffled_soal);
         }
 
-        // Ambil soal berdasarkan urutan shuffled_soal
-        $soal = Soal::whereIn('id', $soal_ids)
+        // Ambil dan urutkan soal
+        $soal = Soal::whereIn('id', $selected_soal_ids)
             ->get()
-            ->sortBy(function ($item) use ($soal_ids) {
-                return array_search($item->id, $soal_ids);
+            ->sortBy(function ($item) use ($selected_soal_ids) {
+                return array_search($item->id, $selected_soal_ids);
             });
 
         $ujian = DB::table('ujians')->where('id', $id)->first();
 
-        $durasi = $ujian->durasi_menit; // misal 30
+        // Hitung sisa waktu
+        $durasi = $ujian->durasi_menit;
         $waktu_mulai = Carbon::parse($peserta->waktu_mulai);
         $sisa_detik = max(0, ($durasi * 60) - now()->diffInSeconds($waktu_mulai));
 
-        // jangan kurang dari 0
-        $sisa_detik = max(0, $sisa_detik);
-
         return view('siswa.kerjakan_ujian', compact('soal', 'ujian', 'peserta', 'sisa_detik'));
     }
+
 
     public function submitUjian(Request $request, $id)
     {

@@ -25,7 +25,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">
                             <i class="iconoir-report-columns menu-icon"></i>
-                            <span>Dashboard</span>
+                            <span>Dashboards</span>
                             <span class="badge text-bg-info ms-auto">New</span>
                         </a>
                     </li><!--end nav-item-->
@@ -91,6 +91,23 @@
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('ujian.daftar') }}">Ujian Saya</a>
+                                    </li><!--end nav-item-->
+                                </ul><!--end nav-->
+                            </div><!--end startbarTables-->
+                        </li><!--end nav-item-->
+                    @endif
+
+                    @if (session('user_role') == 'pengawas')
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarMonitoringUjian" data-bs-toggle="collapse" role="button"
+                                aria-expanded="false" aria-controls="sidebarMonitoringUjian">
+                                <i class="iconoir-task-list menu-icon"></i>
+                                <span>Monitoring Ujian</span>
+                            </a>
+                            <div class="collapse " id="sidebarMonitoringUjian">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('monitoring.ujian') }}">Monitoring Ujian</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
                             </div><!--end startbarTables-->

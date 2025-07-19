@@ -18,6 +18,7 @@
 
     @include('layouts.partials.modals')
     @include('layouts.partials.scripts')
+    @yield('scripts')
 </body>
 
 </html>

@@ -9,6 +9,8 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <div class="card">
+                    {{-- <video id="localVideo" autoplay muted playsinline></video>
+                    <video id="remoteVideo" autoplay playsinline></video> --}}
                     <div class="card-header">
                         <div class="row align-items-center">
                             <div class="col">

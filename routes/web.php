@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\Pengawas\MonitoringUjianController;
 use App\Http\Controllers\PesertaUjianController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
@@ -68,6 +69,14 @@ Route::prefix('siswa')->middleware(['auth'])->group(function () {
     Route::get('/ujian-saya', [UjianSiswaController::class, 'daftarUjian'])->name('ujian.daftar');
     Route::get('/ujian/{id}/mulai', [UjianSiswaController::class, 'mulaiUjian'])->name('ujian.mulai');
     Route::post('/ujian/{id}/submit', [UjianSiswaController::class, 'submitUjian'])->name('ujian.submit');
+});
+
+Route::prefix('pengawas')->middleware(['auth'])->group(function () {
+    // Daftar semua ujian yang aktif
+    Route::get('/monitoring', [MonitoringUjianController::class, 'daftarUjian'])->name('monitoring.ujian');
+
+    // Lihat siswa sedang ujian (per ujian)
+    Route::get('/monitoring/{ujian_id}', [MonitoringUjianController::class, 'showMonitoring'])->name('monitoring.ujian.show');
 });
 
 require __DIR__ . '/auth.php';
