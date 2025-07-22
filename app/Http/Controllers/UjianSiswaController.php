@@ -42,10 +42,19 @@ class UjianSiswaController extends Controller
             ->where('ujian_id', $id)
             ->firstOrFail();
 
+        $ujian = DB::table('ujians')->where('id', $id)->first();
+        $nama_ujian = $ujian->nama_ujian;
+
         // Jika status belum, maka ambil soal acak dan simpan ke siswa_ujian
         if ($peserta->status === 'belum') {
-            $selected_soal_ids = Soal::inRandomOrder()
-                ->limit(10)
+            $kategoriList = Soal::select('kategori')
+                ->where('kategori', 'like', '%' . $nama_ujian . '%')
+                ->distinct()
+                ->pluck('kategori');
+
+            $selected_soal_ids = Soal::whereIn('kategori', $kategoriList) // ← ini penting
+                ->inRandomOrder()
+                ->limit(25)
                 ->pluck('id')
                 ->toArray();
 
@@ -63,8 +72,6 @@ class UjianSiswaController extends Controller
             ->sortBy(function ($item) use ($selected_soal_ids) {
                 return array_search($item->id, $selected_soal_ids);
             });
-
-        $ujian = DB::table('ujians')->where('id', $id)->first();
 
         // Hitung sisa waktu
         $durasi = $ujian->durasi_menit;
@@ -126,5 +133,30 @@ class UjianSiswaController extends Controller
 
         return redirect()->route('ujian.daftar')
             ->with('success', '✅ Ujian berhasil dikumpulkan. Nilai Anda: ' . round($nilai, 2));
+    }
+
+    public function hasilUjian()
+    {
+        $siswa_id = auth()->id();
+
+        $hasil = DB::table('siswa_ujians as su')
+            ->join('ujians as uj', 'su.ujian_id', '=', 'uj.id')
+            ->where('su.siswa_id', $siswa_id)
+            ->where('su.status', 'selesai')
+            ->select(
+                'uj.nama_ujian',
+                'uj.jadwal',
+                'su.waktu_mulai',
+                'su.waktu_selesai',
+                'su.nilai'
+            )
+            ->orderBy('uj.jadwal', 'desc')
+            ->get();
+
+        return view('siswa.hasil_ujian', [
+            'title' => 'Hasil Ujian Saya',
+            'breadcrumbs' => ['Dashboard', 'Hasil Ujian Saya'],
+            'hasil' => $hasil
+        ]);
     }
 }

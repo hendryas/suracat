@@ -170,18 +170,22 @@
                             @csrf
 
                             <div class="mb-3">
+                                <label for="kategori" class="form-label">Kategori Ujian</label>
+                                <select name="kategori" id="kategori" class="form-select" required>
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach ($kategoriList as $kategori)
+                                        <option value="{{ $kategori }}">{{ $kategori }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="kode_soal" class="form-label">Kode Soal</label>
                                 <input type="text" class="form-control @error('kode_soal') is-invalid @enderror"
                                     id="kode_soal" name="kode_soal" value="{{ old('kode_soal') }}" required>
                                 @error('kode_soal')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="kategori" class="form-label">Kategori</label>
-                                <input type="text" class="form-control" name="kategori" id="kategori"
-                                    placeholder="Contoh: Matematika">
                             </div>
 
                             <div class="mb-3">

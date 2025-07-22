@@ -452,7 +452,7 @@
                             @csrf
                             @foreach ($soal as $index => $item)
                                 <div class="p-3 mb-4 border rounded">
-                                    <p><strong>Soal {{ $index + 1 }}:</strong> {{ $item->pertanyaan }}</p>
+                                    <p> {{ $item->pertanyaan }}</p>
                                     @foreach (['a', 'b', 'c', 'd', 'e'] as $opt)
                                         <div>
                                             <input type="radio" name="jawaban[{{ $item->id }}]"
@@ -564,23 +564,30 @@
     </script>
 
     <script>
-        let totalSeconds = parseInt(document.getElementById('durasiUjian').value) * 60;
+        const durasiMenit = parseInt(document.getElementById('durasiUjian').value); // dari input hidden
+        const totalDetik = durasiMenit * 60;
         const timerDisplay = document.getElementById('timer');
         const formUjian = document.getElementById('formUjian');
 
-        function updateTimer() {
-            let minutes = Math.floor(totalSeconds / 60);
-            let seconds = totalSeconds % 60;
-            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        // ⏳ Ambil waktu mulai dari localStorage, kalau belum ada set sekarang
+        let waktuMulai = localStorage.getItem('waktuMulaiUjian');
+        if (!waktuMulai) {
+            waktuMulai = new Date().getTime(); // milidetik
+            localStorage.setItem('waktuMulaiUjian', waktuMulai);
+        } else {
+            waktuMulai = parseInt(waktuMulai);
         }
 
-        updateTimer();
+        const waktuSelesai = waktuMulai + totalDetik * 1000;
 
-        const timerInterval = setInterval(() => {
-            totalSeconds--;
+        function updateTimer() {
+            const sekarang = new Date().getTime();
+            const sisaWaktu = Math.floor((waktuSelesai - sekarang) / 1000); // detik
 
-            if (totalSeconds <= 0) {
+            if (sisaWaktu <= 0) {
                 clearInterval(timerInterval);
+                timerDisplay.textContent = "00:00";
+
                 Swal.fire({
                     icon: 'info',
                     title: 'Waktu Habis',
@@ -589,12 +596,22 @@
                     allowOutsideClick: false,
                 });
 
-                // Auto-submit form
+                localStorage.removeItem('waktuMulaiUjian'); // bersihkan localStorage
                 formUjian.submit();
+            } else {
+                const menit = Math.floor(sisaWaktu / 60);
+                const detik = sisaWaktu % 60;
+                timerDisplay.textContent = `${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
             }
+        }
 
-            updateTimer();
-        }, 1000);
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Reset localStorage jika ujian disubmit manual
+        document.getElementById('btnSubmit').addEventListener('click', function() {
+            localStorage.removeItem('waktuMulaiUjian');
+        });
     </script>
 
     <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -695,8 +712,6 @@
             return peer;
         }
     </script>
-
-
 
 </body>
 <!--end body-->

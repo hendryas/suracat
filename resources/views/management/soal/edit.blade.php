@@ -377,15 +377,22 @@
                             <input type="hidden" name="id" value="{{ $soal->id }}">
 
                             <div class="mb-3">
-                                <label for="kode_soal" class="form-label">Kode Soal</label>
-                                <input type="text" class="form-control" name="kode_soal"
-                                    value="{{ $soal->kode_soal }}" readonly>
+                                <label for="kategori" class="form-label">Kategori Ujian</label>
+                                <select name="kategori" id="kategori" class="form-select" required>
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach ($kategoriList as $kategori)
+                                        <option value="{{ $kategori }}"
+                                            {{ $soal->kategori === $kategori ? 'selected' : '' }}>
+                                            {{ $kategori }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="kategori" class="form-label">Kategori</label>
-                                <input type="text" class="form-control" name="kategori"
-                                    value="{{ $soal->kategori }}">
+                                <label for="kode_soal" class="form-label">Kode Soal</label>
+                                <input type="text" class="form-control" name="kode_soal"
+                                    value="{{ $soal->kode_soal }}" readonly>
                             </div>
 
                             <div class="mb-3">

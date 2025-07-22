@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Soal;
+use App\Models\Ujian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,7 +32,9 @@ class SoalController extends Controller
             'Soal' => '' // terakhir (tidak pakai URL)
         ];
 
-        return view('management.soal.create', compact('title', 'breadcrumbs'));
+        $kategoriList = Ujian::pluck('nama_ujian');
+
+        return view('management.soal.create', compact('title', 'breadcrumbs', 'kategoriList'));
     }
 
     public function store(Request $request)
@@ -69,7 +72,9 @@ class SoalController extends Controller
     public function edit($id)
     {
         $soal = Soal::findOrFail($id);
-        return view('management.soal.edit', compact('soal'));
+
+        $kategoriList = Ujian::pluck('nama_ujian'); // kategori = nama ujian
+        return view('management.soal.edit', compact('soal', 'kategoriList'));
     }
 
     public function update(Request $request, $id)

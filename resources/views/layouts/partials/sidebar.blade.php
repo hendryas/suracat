@@ -56,7 +56,7 @@
                                                 Ujian</a>
                                         </li><!--end nav-item-->
                                         <li class="nav-item">
-                                            <a class="nav-link" href="new-transaction.html">Hasil Ujian</a>
+                                            <a class="nav-link" href="{{ route('admin.hasil-ujian') }}">Hasil Ujian</a>
                                         </li><!--end nav-item-->
                                     </ul><!--end nav-->
                                 @elseif (session('user_role') == 'guru')
@@ -72,7 +72,7 @@
                                                 Ujian</a>
                                         </li><!--end nav-item-->
                                         <li class="nav-item">
-                                            <a class="nav-link" href="new-transaction.html">Hasil Ujian</a>
+                                            <a class="nav-link" href="{{ route('admin.hasil-ujian') }}">Hasil Ujian</a>
                                         </li><!--end nav-item-->
                                     </ul><!--end nav-->
                                 @endif
@@ -91,6 +91,9 @@
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('ujian.daftar') }}">Ujian Saya</a>
+                                    </li><!--end nav-item-->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('ujian.hasil') }}">Hasil Ujian</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
                             </div><!--end startbarTables-->

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\HasilUjianController;
 use App\Http\Controllers\Pengawas\MonitoringUjianController;
 use App\Http\Controllers\PesertaUjianController;
 use App\Http\Controllers\ProfileController;
@@ -62,6 +63,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/peserta-ujian/create', [PesertaUjianController::class, 'create'])->name('peserta.create');
     Route::post('/peserta-ujian', [PesertaUjianController::class, 'store'])->name('peserta.store');
     Route::delete('/peserta-ujian/{id}', [PesertaUjianController::class, 'destroy'])->name('peserta.destroy');
+
+    // Hasil Ujian Seluruh Siswa
+    Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('admin.hasil-ujian');
 });
 
 Route::prefix('siswa')->middleware(['auth'])->group(function () {
@@ -69,6 +73,8 @@ Route::prefix('siswa')->middleware(['auth'])->group(function () {
     Route::get('/ujian-saya', [UjianSiswaController::class, 'daftarUjian'])->name('ujian.daftar');
     Route::get('/ujian/{id}/mulai', [UjianSiswaController::class, 'mulaiUjian'])->name('ujian.mulai');
     Route::post('/ujian/{id}/submit', [UjianSiswaController::class, 'submitUjian'])->name('ujian.submit');
+
+    Route::get('/hasil-ujian', [UjianSiswaController::class, 'hasilUjian'])->name('ujian.hasil');
 });
 
 Route::prefix('pengawas')->middleware(['auth'])->group(function () {
