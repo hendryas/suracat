@@ -39,7 +39,21 @@ class AuthenticatedSessionController extends Controller
             'user_role'  => $user->role ?? 'guest', // default jika role null
         ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // return redirect()->intended(route('dashboard', absolute: false));
+
+        // 🔁 Redirect berdasarkan role
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('dashboard');
+            case 'guru':
+                return redirect()->route('dashboard.guru');
+            case 'pengawas':
+                return redirect()->route('dashboard.pengawas');
+            case 'siswa':
+                return redirect()->route('dashboard.siswa');
+            default:
+                return redirect()->route('dashboard');
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\HasilUjianController;
 use App\Http\Controllers\Pengawas\MonitoringUjianController;
@@ -15,9 +16,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::redirect('/', '/login');
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Dashboard untuk masing-masing role
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard-guru', [DashboardController::class, 'guru'])->name('dashboard.guru');
+    Route::get('/dashboard-siswa', [DashboardController::class, 'siswa'])->name('dashboard.siswa');
+    Route::get('/dashboard-pengawas', [DashboardController::class, 'pengawas'])->name('dashboard.pengawas');
+    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

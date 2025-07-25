@@ -24,14 +24,24 @@
                         <span>Main</span>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">
-                            <i class="iconoir-report-columns menu-icon"></i>
-                            <span>Dashboards</span>
-                            <span class="badge text-bg-info ms-auto">New</span>
-                        </a>
-                    </li><!--end nav-item-->
                     @if (session('user_role') == 'admin' || session('user_role') == 'guru')
+                        @if (session('user_role') == 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link" href=" {{ route('dashboard') }} ">
+                                    <i class="iconoir-report-columns menu-icon"></i>
+                                    <span>Dashboard</span>
+                                    <span class="badge text-bg-info ms-auto">New</span>
+                                </a>
+                            </li><!--end nav-item-->
+                        @elseif (session('user_role') == 'guru')
+                            <li class="nav-item">
+                                <a class="nav-link" href=" {{ route('dashboard.guru') }}">
+                                    <i class="iconoir-report-columns menu-icon"></i>
+                                    <span>Dashboard</span>
+                                    <span class="badge text-bg-info ms-auto">New</span>
+                                </a>
+                            </li><!--end nav-item-->
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="#sidebarTransactions" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="sidebarTransactions">
@@ -84,6 +94,13 @@
 
                     @if (session('user_role') == 'siswa')
                         <li class="nav-item">
+                            <a class="nav-link" href=" {{ route('dashboard.siswa') }}">
+                                <i class="iconoir-report-columns menu-icon"></i>
+                                <span>Dashboard</span>
+                                <span class="badge text-bg-info ms-auto">New</span>
+                            </a>
+                        </li><!--end nav-item-->
+                        <li class="nav-item">
                             <a class="nav-link" href="#sidebarUjian" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="sidebarUjian">
                                 <i class="iconoir-task-list menu-icon"></i>
@@ -104,15 +121,23 @@
 
                     @if (session('user_role') == 'pengawas')
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarMonitoringUjian" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarMonitoringUjian">
+                            <a class="nav-link" href=" {{ route('dashboard.pengawas') }}">
+                                <i class="iconoir-report-columns menu-icon"></i>
+                                <span>Dashboard</span>
+                                <span class="badge text-bg-info ms-auto">New</span>
+                            </a>
+                        </li><!--end nav-item-->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarMonitoringUjian" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarMonitoringUjian">
                                 <i class="iconoir-task-list menu-icon"></i>
                                 <span>Monitoring Ujian</span>
                             </a>
                             <div class="collapse " id="sidebarMonitoringUjian">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('monitoring.ujian') }}">Monitoring Ujian</a>
+                                        <a class="nav-link" href="{{ route('monitoring.ujian') }}">Monitoring
+                                            Ujian</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
                             </div><!--end startbarTables-->
