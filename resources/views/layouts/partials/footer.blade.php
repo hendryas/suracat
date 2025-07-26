@@ -1,4 +1,4 @@
-<footer class="text-center footer text-sm-start d-print-none">
+{{-- <footer class="text-center footer text-sm-start d-print-none">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -16,4 +16,4 @@
             </div>
         </div>
     </div>
-</footer>
+</footer> --}}

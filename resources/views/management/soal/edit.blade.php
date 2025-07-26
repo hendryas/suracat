@@ -257,8 +257,7 @@
                                         class="thumb-md rounded-circle">
                                 </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                    <h6 class="my-0 fw-medium text-dark fs-13">William Martin</h6>
-                                    <small class="mb-0 text-muted">Front End Developer</small>
+                                    <h6 class="my-0 fw-medium text-dark fs-13">{{ Auth::user()->name }}</h6>
                                 </div><!--end media-body-->
                             </div>
                             <div class="mt-0 dropdown-divider"></div>
@@ -284,8 +283,10 @@
                     <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm">
                 </span>
                 <span class="">
-                    <img src="{{ asset('assets/images/logos/suracat.png') }}" alt="logo-large" class="logo-lg logo-light" style="width:120px; height:120px;">
-                <img src="{{ asset('assets/images/logos/suracat.png') }}" alt="logo-large" class="logo-lg logo-dark" style="width:120px; height:120px;">
+                    <img src="{{ asset('assets/images/logos/suracat.png') }}" alt="logo-large"
+                        class="logo-lg logo-light" style="width:120px; height:120px;">
+                    <img src="{{ asset('assets/images/logos/suracat.png') }}" alt="logo-large"
+                        class="logo-lg logo-dark" style="width:120px; height:120px;">
                 </span>
             </a>
         </div>

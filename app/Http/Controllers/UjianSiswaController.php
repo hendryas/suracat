@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JawabanSiswa;
 use App\Models\SiswaUjian;
 use App\Models\Soal;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,9 @@ class UjianSiswaController extends Controller
 {
     public function daftarUjian()
     {
+        $title = 'Ujian';
+        $breadcrumbs = ['Dashboard', 'Ujian'];
+
         $siswa_id = auth()->id();
 
         $daftarUjian = DB::table('siswa_ujians as su')
@@ -30,7 +34,7 @@ class UjianSiswaController extends Controller
             )
             ->get();
 
-        return view('siswa.daftar_ujian', compact('daftarUjian'));
+        return view('siswa.daftar_ujian', compact('daftarUjian', 'title', 'breadcrumbs'));
     }
 
     public function mulaiUjian($id)
@@ -148,7 +152,9 @@ class UjianSiswaController extends Controller
                 'uj.jadwal',
                 'su.waktu_mulai',
                 'su.waktu_selesai',
-                'su.nilai'
+                'su.nilai',
+                'su.ujian_id',
+                'su.siswa_id'
             )
             ->orderBy('uj.jadwal', 'desc')
             ->get();
@@ -158,5 +164,33 @@ class UjianSiswaController extends Controller
             'breadcrumbs' => ['Dashboard', 'Hasil Ujian Saya'],
             'hasil' => $hasil
         ]);
+    }
+
+    public function cetakHasilUjian($ujian_id)
+    {
+        $siswa_id = auth()->id();
+
+        $hasil = DB::table('siswa_ujians as su')
+            ->join('ujians as uj', 'su.ujian_id', '=', 'uj.id')
+            ->join('users as s', 'su.siswa_id', '=', 's.id')
+            ->where('su.siswa_id', $siswa_id)
+            ->where('uj.id', $ujian_id)
+            ->where('su.status', 'selesai')
+            ->select(
+                'uj.nama_ujian',
+                'uj.jadwal',
+                'su.waktu_mulai',
+                'su.waktu_selesai',
+                'su.nilai',
+                's.name as nama_siswa'
+            )
+            ->firstOrFail();
+
+        $sekolah = 'SMA NEGERI 1 RAJAGALUH';
+        $alamat = 'Jl. Pendidikan No. 123, Jakarta Barat';
+
+        $pdf = Pdf::loadView('siswa.hasil_ujian_pdf', compact('hasil', 'sekolah', 'alamat'))->setPaper('A4', 'portrait');
+
+        return $pdf->stream('hasil_ujian_' . $hasil->nama_ujian . '.pdf');
     }
 }

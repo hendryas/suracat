@@ -76,6 +76,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     // Hasil Ujian Seluruh Siswa
     Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('admin.hasil-ujian');
+    Route::get('/hasil-ujian/{siswa_id}/{ujian_id}/cetak', [HasilUjianController::class, 'exportPerUjianPdf'])->name('hasil-ujian.export-pdf-per-ujian');
 });
 
 Route::prefix('siswa')->middleware(['auth'])->group(function () {
@@ -85,6 +86,8 @@ Route::prefix('siswa')->middleware(['auth'])->group(function () {
     Route::post('/ujian/{id}/submit', [UjianSiswaController::class, 'submitUjian'])->name('ujian.submit');
 
     Route::get('/hasil-ujian', [UjianSiswaController::class, 'hasilUjian'])->name('ujian.hasil');
+    // Hasil Ujian Siswa - Cetak PDF
+    Route::get('/hasil-ujian/cetak/{ujian_id}', [UjianSiswaController::class, 'cetakHasilUjian'])->name('siswa.hasil-ujian.cetak');
 });
 
 Route::prefix('pengawas')->middleware(['auth'])->group(function () {
