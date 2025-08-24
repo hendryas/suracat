@@ -100,7 +100,7 @@
         </thead>
         <tbody>
             <tr>
-                <td><strong>{{ round($hasil->nilai, 2) }}</strong></td>
+                <td><strong>{{ number_format($hasil->nilai, 0, '', '') }}</strong></td>
             </tr>
         </tbody>
     </table>

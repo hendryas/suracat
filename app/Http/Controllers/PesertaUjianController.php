@@ -90,4 +90,23 @@ class PesertaUjianController extends Controller
             'message' => 'Peserta berhasil dihapus.'
         ]);
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:users,id',
+            'ujian_id' => 'required|exists:ujians,id',
+        ]);
+
+        $peserta = SiswaUjian::findOrFail($id);
+        $peserta->update([
+            'siswa_id' => $request->siswa_id,
+            'ujian_id' => $request->ujian_id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Peserta berhasil diperbarui.'
+        ]);
+    }
 }

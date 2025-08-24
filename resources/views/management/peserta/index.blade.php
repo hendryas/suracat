@@ -48,10 +48,11 @@
                                                     data-id="{{ $row->peserta_id }}">
                                                     Edit
                                                 </button>
-                                                <button class="btn btn-sm btn-danger btnDelete"
-                                                    data-id="{{ $row->peserta_id }}">
+                                                <button class="btn btn-sm btn-danger btnDeletePeserta"
+                                                    data-id="{{ $row->peserta_id }}" data-nama="{{ $row->siswa_nama }}">
                                                     Hapus
                                                 </button>
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -104,23 +105,66 @@
         </div>
     </div>
 
+    <!-- Modal Edit Peserta -->
+    <div class="modal fade" id="modalEditPeserta" tabindex="-1" aria-labelledby="modalEditPesertaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEditPeserta">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" id="edit_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Peserta Ujian</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_siswa_id" class="form-label">Pilih Siswa</label>
+                            <select name="siswa_id" id="edit_siswa_id" class="form-select" required>
+                                @foreach ($siswa as $s)
+                                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_ujian_id" class="form-label">Pilih Ujian</label>
+                            <select name="ujian_id" id="edit_ujian_id" class="form-select" required>
+                                @foreach ($ujian as $u)
+                                    <option value="{{ $u->id }}">{{ $u->nama_ujian }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 
     <script>
         $(document).ready(function() {
-            $('#tablePeserta').DataTable();
+            // $('#tablePeserta').DataTable();
 
-            $('.btnDelete').on('click', function() {
+            $('.btnDeletePeserta').on('click', function() {
                 let id = $(this).data('id');
+                let nama = $(this).data('nama');
+
                 Swal.fire({
-                    title: 'Hapus peserta ini?',
+                    title: 'Hapus Peserta?',
+                    text: `Peserta atas nama "${nama}" akan dihapus dari ujian.`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus!',
+                    confirmButtonText: 'Ya, Hapus!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `/admin/peserta/${id}`,
+                            url: `/admin/peserta-ujian/${id}`,
                             type: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}'
@@ -128,11 +172,17 @@
                             success: function(res) {
                                 Swal.fire('Berhasil!', res.message, 'success').then(
                                     () => location.reload());
+                            },
+                            error: function() {
+                                Swal.fire('Gagal!',
+                                    'Terjadi kesalahan saat menghapus data.',
+                                    'error');
                             }
                         });
                     }
                 });
             });
+
         });
     </script>
 
@@ -173,6 +223,47 @@
                         });
                     }
                 });
+            });
+        });
+    </script>
+
+    <script>
+        $('.btnEdit').on('click', function() {
+            let id = $(this).data('id');
+
+            // Ambil data dari baris tabel
+            let row = $(this).closest('tr');
+            let siswa = row.find('td:eq(1)').text().trim();
+            let ujian = row.find('td:eq(2)').text().trim();
+
+            $('#edit_id').val(id);
+            $('#edit_siswa_id option').filter(function() {
+                return $(this).text().trim() === siswa;
+            }).prop('selected', true);
+
+            $('#edit_ujian_id option').filter(function() {
+                return $(this).text().trim() === ujian;
+            }).prop('selected', true);
+
+            $('#modalEditPeserta').modal('show');
+        });
+
+        // Submit update
+        $('#formEditPeserta').on('submit', function(e) {
+            e.preventDefault();
+            const id = $('#edit_id').val();
+            const data = $(this).serialize();
+
+            $.ajax({
+                url: `/admin/peserta-ujian/${id}`,
+                type: 'POST',
+                data: data,
+                success: function(res) {
+                    Swal.fire('Berhasil!', res.message, 'success').then(() => location.reload());
+                },
+                error: function(err) {
+                    Swal.fire('Gagal!', 'Terjadi kesalahan saat update.', 'error');
+                }
             });
         });
     </script>

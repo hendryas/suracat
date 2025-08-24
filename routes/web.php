@@ -73,6 +73,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/peserta-ujian/create', [PesertaUjianController::class, 'create'])->name('peserta.create');
     Route::post('/peserta-ujian', [PesertaUjianController::class, 'store'])->name('peserta.store');
     Route::delete('/peserta-ujian/{id}', [PesertaUjianController::class, 'destroy'])->name('peserta.destroy');
+    Route::put('/peserta-ujian/{id}', [PesertaUjianController::class, 'update'])->name('peserta.update');
+
 
     // Hasil Ujian Seluruh Siswa
     Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('admin.hasil-ujian');

@@ -36,7 +36,7 @@
                                             <td>{{ \Carbon\Carbon::parse($hasil->jadwal)->format('d M Y H:i') }}</td>
                                             <td>{{ $hasil->waktu_mulai }}</td>
                                             <td>{{ $hasil->waktu_selesai }}</td>
-                                            <td><strong>{{ round($hasil->nilai, 2) }}</strong></td>
+                                            <td><strong>{{ number_format($hasil->nilai, 0, '', '') }}</strong></td>
                                             <td>
                                                 <a href="{{ route('hasil-ujian.export-pdf-per-ujian', ['siswa_id' => $hasil->siswa_id, 'ujian_id' => $hasil->ujian_id]) }}"
                                                     target="_blank" class="btn btn-sm btn-danger">
